@@ -1,10 +1,12 @@
 <script>
 	import { onMount } from 'svelte';
+	import { freqs } from '$lib/freqs';
 
 	import * as Tone from 'tone';
+	import { replaceStateWithQuery } from './url';
 
 	let onOff, osc;
-	export let freq = 200;
+	export let toneId;
 	export let pan = 0;
 
 	onMount(() => {
@@ -12,7 +14,7 @@
 			pan
 		}).toDestination();
 		osc = new Tone.Oscillator({
-			frequency: freq,
+			frequency: $freqs[toneId],
 			type: 'sine',
 			volume: -Infinity
 		}).connect(panner);
@@ -20,10 +22,16 @@
 
 	let toggle = () => {
 		if (onOff) {
+			//turn on tone
 			osc.start();
 			osc.volume.rampTo(-12, 0.5);
+			osc.frequency.rampTo($freqs[toneId], 1);
+			//add to query string
+			replaceStateWithQuery({ [toneId]: $freqs[toneId] });
 			return;
 		}
+		//turn off tone
+		replaceStateWithQuery({ [toneId]: null });
 		osc.volume.rampTo(-Infinity, 0.5);
 		osc.stop('+1.6');
 	};
@@ -40,17 +48,20 @@
 	/>
 	<label for="start-stop" />
 
-	<label name="click for tone" class="freq" for="freq"
+	<label name="click for tone" class={'freq'} for={toneId}
 		>frequency (hz)
 		<input
 			type="number"
 			min="20"
 			max="10000"
-			name="freq"
-			id="freq"
+			name={toneId}
+			id={toneId}
 			step="0.1"
-			bind:value={freq}
-			on:change={() => osc.frequency.rampTo(freq, 1)}
+			bind:value={$freqs[toneId]}
+			on:change={() => {
+				osc.frequency.rampTo($freqs[toneId], 1);
+				if (onOff) replaceStateWithQuery({ [toneId]: $freqs[toneId] });
+			}}
 		/>
 	</label>
 </main>
@@ -62,23 +73,22 @@
 		flex-direction: row;
 		align-items: center;
 		justify-content: space-between;
-
+		min-width: 100px;
 		padding: 0.8rem;
 		font-size: 1rem;
 	}
 	input[type='number'] {
 		background: inherit;
-		color: white;
-		font-family: monospace;
+		color: inherit;
+		font-family: inherit;
 		font-size: 1rem;
 		border: 1px solid white;
 	}
 	input[type='number']:focus {
 		outline: none;
-		box-shadow: 3px 3px blue;
+		box-shadow: 3px 3px #0000ff;
 	}
 	.freq {
-		font-family: monospace;
 		color: white;
 	}
 	input[type='checkbox'] {
