@@ -71,13 +71,15 @@
 		background: red;
 		display: inline-flex;
 		flex-direction: row;
+		flex-wrap: nowrap;
 		align-items: center;
 		justify-content: space-between;
 		min-width: 100px;
-		padding: 0.8rem;
+		padding: 0.9rem;
 		font-size: 1rem;
 	}
 	input[type='number'] {
+		width: 5rem;
 		background: inherit;
 		color: inherit;
 		font-family: inherit;
@@ -90,6 +92,17 @@
 	}
 	.freq {
 		color: white;
+	}
+	::selection {
+		background: blue;
+	}
+	input::-webkit-outer-spin-button,
+	input::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+	input[type='number'] {
+		-moz-appearance: textfield;
 	}
 	input[type='checkbox'] {
 		width: 2rem;

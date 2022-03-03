@@ -72,6 +72,7 @@
 
 	button {
 		background-color: blue;
+
 		font-family: inherit;
 		color: inherit;
 		margin: 0;
@@ -82,7 +83,7 @@
 		padding: 0.6rem 0.8rem;
 	}
 
-	@media (max-width: 1275px) {
+	@media (max-width: 1075px) {
 		main {
 			flex-direction: column;
 			align-items: center;
