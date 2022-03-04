@@ -94,7 +94,8 @@
 		color: white;
 	}
 	::selection {
-		background: blue;
+		background: white;
+		color: blue;
 	}
 	input::-webkit-outer-spin-button,
 	input::-webkit-inner-spin-button {
@@ -118,5 +119,12 @@
 	}
 	input[type='checkbox']:checked {
 		background: white;
+	}
+
+	@media (max-width: 1075px) {
+		input[type='number'],
+		.freq {
+			font-size: 16px;
+		}
 	}
 </style>

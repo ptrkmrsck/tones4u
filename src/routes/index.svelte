@@ -50,8 +50,8 @@
 <style>
 	main {
 		height: 100vh;
+		min-height: 450px;
 		display: flex;
-
 		justify-content: space-evenly;
 		align-items: center;
 		flex-direction: row;
@@ -89,6 +89,11 @@
 			align-items: center;
 			justify-content: center;
 			gap: 2rem;
+		}
+	}
+	@media (max-height: 450px) {
+		button {
+			position: relative;
 		}
 	}
 </style>
