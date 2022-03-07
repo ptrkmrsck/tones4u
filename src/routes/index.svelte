@@ -3,20 +3,26 @@
 	import { replaceStateWithQuery } from '$lib/url.js';
 	import { onMount } from 'svelte';
 	import { freqs } from '$lib/freqs.js';
-	let copied = false;
 
-	let clicked = false;
+	let copied = false;
+	let toneElement;
 
 	onMount(() => {
 		const url = new URL(window.location.toString());
 		// if there is a query string set all freqs to null and reset with query vals
 		if ([...url.searchParams.entries()].length > 0) {
-			Object.keys($freqs).forEach((k) => ($freqs[k] = null));
+			clearFreqs();
 			for (const [k, v] of url.searchParams.entries()) {
 				$freqs[k] = v;
 			}
+			return;
 		}
+		rndmFreqs();
 	});
+
+	let clearFreqs = () => {
+		Object.keys($freqs).forEach((k) => ($freqs[k] = null));
+	};
 
 	let copyClick = async () => {
 		try {
@@ -31,25 +37,41 @@
 		}
 	};
 
-	// let copyClick = () => {
-	// 	copied = true;
-	// 	setTimeout(() => {
-	// 		copied = false;
-	// 	}, 1500);
+	let rndmFreqs = () => {
+		Object.keys($freqs).forEach((k) => ($freqs[k] = (Math.random() * 1000 + 40).toFixed(2)));
+	};
+
+	let rndmClick = () => {
+		clearFreqs();
+		replaceStateWithQuery($freqs);
+		location.reload();
+	};
+	// let rndmClick = () => {
+	// 	rndmFreqs();
 	// };
+
+	let allOnOff = () => {
+		toneElement.turnOff();
+	};
+
+	//bind:this={toneElement}
 </script>
 
 <main>
-	<Tone toneId="freq3" pan="-1" />
+	<button class="rndm" on:click={rndmClick}>rndm</button>
+	<button class="allOnOff" on:click={allOnOff}>all off/on</button>
+	<Tone bind:this={toneElement} toneId="freq3" pan="-1" />
 	<Tone toneId="freq1" pan="-1" />
 	<Tone toneId="freq2" pan="1" />
 	<Tone toneId="freq4" pan="1" />
-	<button on:click={copyClick}>{copied ? 'sharing link copied' : 'click to share'}</button>
+	<button class="copy" on:click={copyClick}
+		>{copied ? 'sharing link copied' : 'click to share'}</button
+	>
 </main>
 
 <style>
 	main {
-		height: 100vh;
+		height: 98vh;
 		min-height: 450px;
 		display: flex;
 		justify-content: space-evenly;
@@ -72,15 +94,24 @@
 
 	button {
 		background-color: blue;
-
 		font-family: inherit;
 		color: inherit;
 		margin: 0;
 		border: none;
 		cursor: pointer;
 		position: absolute;
-		bottom: 0;
 		padding: 0.6rem 0.8rem;
+	}
+	.copy {
+		bottom: 0;
+	}
+	.rndm {
+		right: 0;
+		top: 0;
+	}
+	.allOnOff {
+		left: 0;
+		top: 0;
 	}
 
 	@media (max-width: 1075px) {
@@ -92,7 +123,7 @@
 		}
 	}
 	@media (max-height: 450px) {
-		button {
+		.copy {
 			position: relative;
 		}
 	}

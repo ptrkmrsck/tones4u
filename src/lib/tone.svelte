@@ -1,11 +1,12 @@
 <script>
 	import { onMount } from 'svelte';
-	import { freqs } from '$lib/freqs';
+	import { freqs, oscType } from '$lib/freqs';
 
 	import * as Tone from 'tone';
 	import { replaceStateWithQuery } from './url';
 
-	let onOff, osc;
+	let onOff = false;
+	let osc;
 	export let toneId;
 	export let pan = 0;
 
@@ -15,7 +16,7 @@
 		}).toDestination();
 		osc = new Tone.Oscillator({
 			frequency: $freqs[toneId],
-			type: 'sine',
+			type: $oscType,
 			volume: -Infinity
 		}).connect(panner);
 	});
@@ -24,16 +25,25 @@
 		if (onOff) {
 			//turn on tone
 			osc.start();
-			osc.volume.rampTo(-12, 0.5);
-			osc.frequency.rampTo($freqs[toneId], 1);
+			osc.volume.rampTo(-6, 0.5);
+			osc.frequency.rampTo($freqs[toneId], 0.01);
 			//add to query string
 			replaceStateWithQuery({ [toneId]: $freqs[toneId] });
 			return;
 		}
-		//turn off tone
+		//turn off tone and remove from query string
 		replaceStateWithQuery({ [toneId]: null });
 		osc.volume.rampTo(-Infinity, 0.5);
 		osc.stop('+1.6');
+	};
+
+	let freqChange = () => {
+		osc.frequency.rampTo($freqs[toneId], 0.01);
+		if (onOff) replaceStateWithQuery({ [toneId]: $freqs[toneId] });
+	};
+
+	export const turnOff = () => {
+		onOff = false;
 	};
 </script>
 
@@ -58,10 +68,7 @@
 			id={toneId}
 			step="0.1"
 			bind:value={$freqs[toneId]}
-			on:change={() => {
-				osc.frequency.rampTo($freqs[toneId], 1);
-				if (onOff) replaceStateWithQuery({ [toneId]: $freqs[toneId] });
-			}}
+			on:change={freqChange}
 		/>
 	</label>
 </main>
