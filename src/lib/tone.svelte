@@ -3,12 +3,23 @@
 	import { freqs, oscType } from '$lib/freqs';
 
 	import * as Tone from 'tone';
-	import { replaceStateWithQuery } from './url';
+	import { replaceStateWithQuery } from '$lib/url';
 
 	let onOff = false;
 	let osc;
+	// export let allOnOff;
 	export let toneId;
 	export let pan = 0;
+
+	$: if ($freqs[toneId]) {
+		freqChange();
+	}
+
+	// $: if (allOnOff) {
+	// 	startTone();
+	// } else {
+	// 	stopTone();
+	// }
 
 	onMount(() => {
 		let panner = new Tone.Panner({
@@ -21,29 +32,33 @@
 		}).connect(panner);
 	});
 
-	let toggle = () => {
-		if (onOff) {
-			//turn on tone
-			osc.start();
-			osc.volume.rampTo(-6, 0.5);
-			osc.frequency.rampTo($freqs[toneId], 0.01);
-			//add to query string
-			replaceStateWithQuery({ [toneId]: $freqs[toneId] });
-			return;
-		}
+	let startTone = () => {
+		//turn on tone
+		osc.start();
+		osc.volume.rampTo(-6, 0.5);
+		osc.frequency.rampTo($freqs[toneId], 0.01);
+		//add to query string
+		replaceStateWithQuery({ [toneId]: $freqs[toneId] });
+	};
+
+	let stopTone = () => {
 		//turn off tone and remove from query string
 		replaceStateWithQuery({ [toneId]: null });
 		osc.volume.rampTo(-Infinity, 0.5);
 		osc.stop('+1.6');
 	};
 
-	let freqChange = () => {
-		osc.frequency.rampTo($freqs[toneId], 0.01);
-		if (onOff) replaceStateWithQuery({ [toneId]: $freqs[toneId] });
+	let toggle = () => {
+		if (onOff) {
+			startTone();
+			return;
+		}
+		stopTone();
 	};
 
-	export const turnOff = () => {
-		onOff = false;
+	let freqChange = () => {
+		osc.frequency.rampTo($freqs[toneId], 0.5);
+		if (onOff) replaceStateWithQuery({ [toneId]: $freqs[toneId] });
 	};
 </script>
 
