@@ -21,6 +21,7 @@
   },
   "type": "module",
   "dependencies": {
+    "@supabase/supabase-js": "^1.31.1",
     "tone": "^14.7.77"
   }
 }

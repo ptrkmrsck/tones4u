@@ -1,55 +1,63 @@
 <script>
 	import Tone from '$lib/tone.svelte';
-	import { replaceStateWithQuery } from '$lib/url.js';
+	import Menu from '$lib/menu.svelte';
 	import { onMount } from 'svelte';
 	import { freqs } from '$lib/freqs.js';
-	let copied = false;
 
-	let clicked = false;
+	let copied = false;
+	let menuToggle = false;
 
 	onMount(() => {
 		const url = new URL(window.location.toString());
 		// if there is a query string set all freqs to null and reset with query vals
 		if ([...url.searchParams.entries()].length > 0) {
-			Object.keys($freqs).forEach((k) => ($freqs[k] = null));
 			for (const [k, v] of url.searchParams.entries()) {
 				$freqs[k] = v;
 			}
+			return;
 		}
+		// if no query string set random tones
+		rndmFreqs();
 	});
 
-	let copyClick = async () => {
-		try {
-			const copyurl = new URL(window.location.toString());
-			await navigator.clipboard.writeText(copyurl);
-			copied = true;
-			setTimeout(() => {
-				copied = false;
-			}, 1500);
-		} catch (e) {
-			console.error('e', e);
-		}
+	let copyClick = () => {
+		const copyurl = new URL(window.location.toString());
+		navigator.clipboard.writeText(copyurl);
+		copied = true;
+		setTimeout(() => {
+			copied = false;
+		}, 1500);
 	};
-
-	// let copyClick = () => {
-	// 	copied = true;
-	// 	setTimeout(() => {
-	// 		copied = false;
-	// 	}, 1500);
+	// let clearFreqs = () => {
+	// 	Object.keys($freqs).forEach((k) => ($freqs[k] = null));
 	// };
+
+	let rndmFreqs = () => {
+		Object.keys($freqs).forEach((k) => ($freqs[k] = (Math.random() * 1000 + 60).toFixed(2)));
+	};
 </script>
 
 <main>
+	{#if menuToggle}
+		<div class="menu">
+			<Menu on:close={() => (menuToggle = !menuToggle)} />
+		</div>
+	{:else}
+		<button class="menu" on:click={() => (menuToggle = !menuToggle)}>???</button>
+	{/if}
+	<button class="rndm" on:click={rndmFreqs}>rndm</button>
 	<Tone toneId="freq3" pan="-1" />
 	<Tone toneId="freq1" pan="-1" />
 	<Tone toneId="freq2" pan="1" />
 	<Tone toneId="freq4" pan="1" />
-	<button on:click={copyClick}>{copied ? 'sharing link copied' : 'click to share'}</button>
+	<button class="copy" on:click={copyClick}
+		>{copied ? 'sharing link copied' : 'click to share'}</button
+	>
 </main>
 
 <style>
 	main {
-		height: 100vh;
+		height: 98vh;
 		min-height: 450px;
 		display: flex;
 		justify-content: space-evenly;
@@ -72,15 +80,28 @@
 
 	button {
 		background-color: blue;
-
 		font-family: inherit;
 		color: inherit;
 		margin: 0;
 		border: none;
 		cursor: pointer;
 		position: absolute;
-		bottom: 0;
 		padding: 0.6rem 0.8rem;
+	}
+	.copy {
+		bottom: 0;
+	}
+	.rndm {
+		right: 0;
+		top: 0;
+		z-index: 1;
+	}
+	.menu {
+		position: absolute;
+		left: 0;
+		top: 0;
+		z-index: 2;
+		max-width: 50%;
 	}
 
 	@media (max-width: 1075px) {
@@ -90,9 +111,12 @@
 			justify-content: center;
 			gap: 2rem;
 		}
+		.menu {
+			max-width: 100%;
+		}
 	}
 	@media (max-height: 450px) {
-		button {
+		.copy {
 			position: relative;
 		}
 	}
