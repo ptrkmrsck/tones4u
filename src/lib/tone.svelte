@@ -110,6 +110,7 @@
 		font-family: inherit;
 		font-size: 1rem;
 		border: 1px solid white;
+		border-radius: 0;
 	}
 	input[type='number']:focus {
 		outline: none;
@@ -131,11 +132,11 @@
 		-moz-appearance: textfield;
 	}
 	input[type='checkbox'] {
-		width: 2rem;
-		height: 2rem;
-		margin-right: 0.5rem;
+		width: 2.5rem;
+		height: 2.5rem;
+		margin-right: 0.9rem;
 		border-radius: 50%;
-		transition: all 0.5s;
+		transition: all 1s;
 		border: 2px solid white;
 		background: inherit;
 		cursor: pointer;

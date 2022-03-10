@@ -33,18 +33,30 @@
 	<button class="close" on:click={close}>x</button>
 	{#if !archiveToggle}
 		<p>⏦Ty for visiting tones4u⏦</p>
-		<p>To turn on a tone toggle/click the <span class="circle">◯</span></p>
+		<p>To turn on a tone click/toggle the <span class="circle">◯</span></p>
+		<p>Make sure your device is not in "silent mode"</p>
 		<p>Headphones are recommended</p>
-		<p>Click the "click to share" button to copy the ~tones4u~ sharing link for sharing</p>
+		<p>
+			Click the "click to share" button to copy the ~tones4u~ sharing link for sharing. At least one
+			tone must be active to share.
+		</p>
 		{#if searchParams}
 			<p>
 				Submit your tones to the ⏦<span class="archive-link" on:click={archiveClick}
 					>Tones Archive</span
-				>⏦ by describing it with as few words as possible and clicking submit:
+				>⏦ by describing them with as few words as possible and clicking submit:
 			</p>
 
 			<div class="sub">
-				<input {placeholder} type="text" name="" id="" bind:value />
+				<input
+					{placeholder}
+					type="text"
+					name="description"
+					id="description"
+					title="describe your tones here"
+					maxlength="60"
+					bind:value
+				/>
 				<button class="submit" disabled={!value} on:click={handleSubmit}
 					>{submitted ? '_ty:)_' : 'submit'}</button
 				>
@@ -106,10 +118,19 @@
 		font-family: inherit;
 		border: 1px solid white;
 	}
+
 	input:focus {
 		outline: none;
 		box-shadow: 3px 3px red;
 	}
+
+	::placeholder {
+		opacity: 90%;
+		font-size: 1rem;
+		font-style: italic;
+		color: red;
+	}
+
 	::selection {
 		background: white;
 		color: red;
