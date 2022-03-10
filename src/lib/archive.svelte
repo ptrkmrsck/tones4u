@@ -6,7 +6,7 @@
 	{#await supabase.from('tones4uArchive').select('*')}
 		<p>⏦loading⏦</p>
 	{:then value}
-		{#each value.data as i}
+		{#each value.data.reverse() as i}
 			<p><a href={i.url}>{i.description}</a></p>
 		{/each}
 	{/await}

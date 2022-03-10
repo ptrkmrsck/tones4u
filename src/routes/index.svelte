@@ -4,13 +4,14 @@
 	import { onMount } from 'svelte';
 	import { freqs } from '$lib/freqs.js';
 
-	let copied = false;
+	let copied = 'click to share';
 	let menuToggle = false;
 
 	onMount(() => {
-		const url = new URL(window.location.toString());
+		let url = new URL(window.location.toString());
+		let searchParams = url.href.includes('freq');
 		// if there is a query string set all freqs to null and reset with query vals
-		if ([...url.searchParams.entries()].length > 0) {
+		if (searchParams) {
 			for (const [k, v] of url.searchParams.entries()) {
 				$freqs[k] = v;
 			}
@@ -21,12 +22,18 @@
 	});
 
 	let copyClick = () => {
-		const copyurl = new URL(window.location.toString());
-		navigator.clipboard.writeText(copyurl);
-		copied = true;
+		let url = new URL(window.location.toString());
+		let searchParams = url.href.includes('freq');
+		if (searchParams) {
+			const copyurl = new URL(window.location.toString());
+			navigator.clipboard.writeText(copyurl);
+			copied = 'sharing link copied';
+		} else if (!searchParams) {
+			copied = 'ERROR: no tones active :( turn tones on to share';
+		}
 		setTimeout(() => {
-			copied = false;
-		}, 1500);
+			copied = 'click to share';
+		}, 2000);
 	};
 	// let clearFreqs = () => {
 	// 	Object.keys($freqs).forEach((k) => ($freqs[k] = null));
@@ -50,8 +57,10 @@
 	<Tone toneId="freq1" pan="-1" />
 	<Tone toneId="freq2" pan="1" />
 	<Tone toneId="freq4" pan="1" />
-	<button class="copy" on:click={copyClick}
-		>{copied ? 'sharing link copied' : 'click to share'}</button
+	<button
+		title="click to copy tones4u sharing link to your clipboard"
+		class="copy"
+		on:click={copyClick}>{copied}</button
 	>
 </main>
 
