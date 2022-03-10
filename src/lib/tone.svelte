@@ -11,9 +11,7 @@
 	export let toneId;
 	export let pan = 0;
 
-	$: if ($freqs[toneId]) {
-		freqChange();
-	}
+	$: if ($freqs[toneId]) freqChange($freqs[toneId]);
 
 	// $: if (allOnOff) {
 	// 	startTone();
@@ -36,7 +34,8 @@
 		//turn on tone
 		osc.start();
 		osc.volume.rampTo(-6, 0.5);
-		osc.frequency.rampTo($freqs[toneId], 0.01);
+		// osc.frequency.rampTo($freqs[toneId], 0.01);
+
 		//add to query string
 		replaceStateWithQuery({ [toneId]: $freqs[toneId] });
 	};
@@ -56,9 +55,13 @@
 		stopTone();
 	};
 
-	let freqChange = () => {
-		osc.frequency.rampTo($freqs[toneId], 0.5);
-		if (onOff) replaceStateWithQuery({ [toneId]: $freqs[toneId] });
+	let freqChange = (newFreq) => {
+		osc.frequency.rampTo(newFreq, 2);
+		if (onOff) replaceStateWithQuery({ [toneId]: newFreq });
+	};
+
+	let letToneTypeChange = (type) => {
+		osc.type = type;
 	};
 </script>
 

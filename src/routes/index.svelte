@@ -33,7 +33,7 @@
 	// };
 
 	let rndmFreqs = () => {
-		Object.keys($freqs).forEach((k) => ($freqs[k] = (Math.random() * 1000 + 40).toFixed(2)));
+		Object.keys($freqs).forEach((k) => ($freqs[k] = (Math.random() * 1000 + 60).toFixed(2)));
 	};
 </script>
 

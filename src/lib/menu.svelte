@@ -1,51 +1,72 @@
 <script>
-	import { createEventDispatcher } from 'svelte';
+	import supabase from '$lib/supabase';
+	import { createEventDispatcher, onMount } from 'svelte';
+	import { makePlaceholder } from '$lib/freqs.js';
+	import Archive from '$lib/archive.svelte';
 	let value = '';
 	let submitted = false;
+	let archiveToggle = false;
+	let url = new URL(window.location.toString());
+	let searchParams = url.href.includes('freq');
 
+	let placeholder = makePlaceholder();
 	const dispatch = createEventDispatcher();
 	const close = () => dispatch('close');
 
-	const handleSubmit = () => {
+	const handleSubmit = async (e) => {
 		submitted = true;
-		const url = new URL(window.location.toString());
-		console.log(value, url.href);
+		const { data, error } = await supabase
+			.from('tones4uArchive')
+			.insert([{ description: value, url: url.href }]);
 		setTimeout(() => {
 			submitted = false;
 			value = '';
-		}, 1500);
+		}, 1200);
 	};
-
-	//TODO: hook up database and build out archive :)
+	let archiveClick = () => {
+		archiveToggle = !archiveToggle;
+	};
 </script>
 
 <div class="background" on:click={close} />
 <main>
-	<button class="close" on:click={close}>X</button>
-	<p>⏦Ty for visiting tones4u⏦</p>
-	<p>To turn on a tone toggle/click the <span class="circle">◯</span></p>
-	<p>Headphones are recommended</p>
-	<p>Click the "click to share" button to copy the ~tones4u~ sharing link for sharing</p>
+	<button class="close" on:click={close}>x</button>
+	{#if !archiveToggle}
+		<p>⏦Ty for visiting tones4u⏦</p>
+		<p>To turn on a tone toggle/click the <span class="circle">◯</span></p>
+		<p>Headphones are recommended</p>
+		<p>Click the "click to share" button to copy the ~tones4u~ sharing link for sharing</p>
+		{#if searchParams}
+			<p>
+				Submit your tones to the ⏦<span class="archive-link" on:click={archiveClick}
+					>Tones Archive</span
+				>⏦ by describing it with as few words as possible and clicking submit:
+			</p>
 
-	<p>
-		Submit your tones to the <a href="/archive">Tones Archive</a> by describing it with as few words
-		as possible and clicking submit:
-	</p>
-
-	<div class="sub">
-		<input type="text" name="" id="" bind:value />
-		<button class="submit" disabled={!value} on:click={handleSubmit}
-			>{submitted ? '_ty:)_' : 'submit'}</button
-		>
-	</div>
+			<div class="sub">
+				<input {placeholder} type="text" name="" id="" bind:value />
+				<button class="submit" disabled={!value} on:click={handleSubmit}
+					>{submitted ? '_ty:)_' : 'submit'}</button
+				>
+			</div>
+		{:else}
+			<p><span class="archive-link" on:click={archiveClick}>⏦Tones Archive⏦</span></p>
+		{/if}
+	{:else}
+		<p><span on:click={archiveClick} class="archive-link">&lt;&lt; back</span></p>
+		<p class="title">⏦Tones Archive⏦</p>
+		<Archive />
+	{/if}
 </main>
 
 <style>
 	main {
 		background: blue;
 		margin: 0;
-		padding: 0.8rem 1rem 0.8rem 1rem;
+		padding: 0.8rem 1.3rem 1rem 1.3rem;
 		border: 1px solid white;
+		max-height: 96vh;
+		overflow: scroll;
 	}
 	.background {
 		position: fixed;
@@ -73,6 +94,7 @@
 	}
 	.close {
 		font-size: 1.4rem;
+		padding-bottom: 0.35rem;
 		position: absolute;
 		top: 0;
 		right: 0;
@@ -92,10 +114,10 @@
 		background: white;
 		color: red;
 	}
-	a {
+	/* a {
 		text-decoration: underline;
 		color: inherit;
-	}
+	} */
 	.sub {
 		display: flex;
 		justify-content: space-between;
@@ -106,6 +128,14 @@
 	}
 	.circle {
 		font-size: 1.4rem;
+	}
+	.archive-link {
+		text-decoration: underline;
+		cursor: pointer;
+	}
+	.title {
+		text-align: center;
+		font-size: 1.2rem;
 	}
 
 	@media (max-width: 1075px) {
