@@ -32,12 +32,12 @@
 <main>
 	<button class="close" on:click={close}>x</button>
 	{#if !archiveToggle}
-		<p>⏦Ty for visiting tones4u⏦</p>
+		<p>Ty for visiting ⏦tones4u⏦</p>
 		<p>To turn on a tone click/toggle the <span class="circle">◯</span></p>
 		<p>Make sure your device is not in "silent mode"</p>
 		<p>Headphones are recommended</p>
 		<p>
-			Click the "click to share" button to copy the ~tones4u~ sharing link for sharing. At least one
+			Click the "click to share" button to copy the ⏦tones4u⏦ sharing link for sharing. At least one
 			tone must be active to share.
 		</p>
 		{#if searchParams}
@@ -117,6 +117,7 @@
 		color: inherit;
 		font-family: inherit;
 		border: 1px solid white;
+		border-radius: 0;
 	}
 
 	input:focus {

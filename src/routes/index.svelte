@@ -27,13 +27,16 @@
 		if (searchParams) {
 			const copyurl = new URL(window.location.toString());
 			navigator.clipboard.writeText(copyurl);
-			copied = 'sharing link copied';
+			copied = 'sharing link copied!';
+			setTimeout(() => {
+				copied = 'click to share';
+			}, 1500);
 		} else if (!searchParams) {
-			copied = 'ERROR: no tones active :( turn tones on to share';
+			copied = 'ERROR: No tones active. Turn on at least one tone to share';
+			setTimeout(() => {
+				copied = 'click to share';
+			}, 3200);
 		}
-		setTimeout(() => {
-			copied = 'click to share';
-		}, 2000);
 	};
 	// let clearFreqs = () => {
 	// 	Object.keys($freqs).forEach((k) => ($freqs[k] = null));
