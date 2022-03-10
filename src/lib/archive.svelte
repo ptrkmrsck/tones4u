@@ -10,37 +10,6 @@
 			<p><a href={i.url}>{i.description}</a></p>
 		{/each}
 	{/await}
-
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
-	<p>text</p>
 </div>
 
 <style>
