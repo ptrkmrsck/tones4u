@@ -7,17 +7,11 @@
 
 	let onOff = false;
 	let osc;
-	// export let allOnOff;
+	let freq;
 	export let toneId;
 	export let pan = 0;
 
 	$: if ($freqs[toneId]) freqChange($freqs[toneId]);
-
-	// $: if (allOnOff) {
-	// 	startTone();
-	// } else {
-	// 	stopTone();
-	// }
 
 	onMount(() => {
 		let panner = new Tone.Panner({
@@ -34,7 +28,6 @@
 		//turn on tone
 		osc.start();
 		osc.volume.rampTo(-6, 0.5);
-		// osc.frequency.rampTo($freqs[toneId], 0.01);
 
 		//add to query string
 		replaceStateWithQuery({ [toneId]: $freqs[toneId] });
@@ -56,12 +49,13 @@
 	};
 
 	let freqChange = (newFreq) => {
+		freq = newFreq;
 		osc.frequency.rampTo(newFreq, 2);
 		if (onOff) replaceStateWithQuery({ [toneId]: newFreq });
 	};
 
-	let letToneTypeChange = (type) => {
-		osc.type = type;
+	let handleChange = (event) => {
+		freqChange(event.target.value);
 	};
 </script>
 
@@ -85,8 +79,8 @@
 			name={toneId}
 			id={toneId}
 			step="0.1"
-			bind:value={$freqs[toneId]}
-			on:change={freqChange}
+			bind:value={freq}
+			on:change={handleChange}
 		/>
 	</label>
 </main>

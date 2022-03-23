@@ -87,6 +87,7 @@ const toneWords = [
 	'complex',
 	'clicky',
 	'clean',
+	'chocolate',
 	'chilling',
 	'cavernous',
 	'buzzy',
@@ -100,7 +101,13 @@ const toneWords = [
 	'basic',
 	'anxiety inducing',
 	'ahead',
-	'(any color)'
+	'blue',
+	'red',
+	'green',
+	'grey',
+	'cyan',
+	'yellow',
+	'silver'
 ];
 
 const rdmToneWord = () => {
