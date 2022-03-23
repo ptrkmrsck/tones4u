@@ -15,7 +15,9 @@
 		<p>⏦loading⏦</p>
 	{:then value}
 		{#each value.data.reverse() as i}
-			<p><span data-url={i.url} on:click={archiveClick}>{i.description}</span></p>
+			{#if i.approved}
+				<p><span data-url={i.url} on:click={archiveClick}>{i.description}</span></p>
+			{/if}
 		{/each}
 	{/await}
 </div>
