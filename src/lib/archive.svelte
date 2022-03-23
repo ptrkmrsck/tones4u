@@ -1,5 +1,13 @@
 <script>
 	import supabase from '$lib/supabase';
+	import { freqs } from '$lib/freqs';
+
+	let archiveClick = (e) => {
+		let archiveURL = new URL(e.target.dataset.url);
+		for (const [k, v] of archiveURL.searchParams.entries()) {
+			$freqs[k] = v;
+		}
+	};
 </script>
 
 <div>
@@ -7,7 +15,7 @@
 		<p>⏦loading⏦</p>
 	{:then value}
 		{#each value.data.reverse() as i}
-			<p><a href={i.url}>{i.description}</a></p>
+			<p><span data-url={i.url} on:click={archiveClick}>{i.description}</span></p>
 		{/each}
 	{/await}
 </div>
@@ -16,12 +24,14 @@
 	div {
 		text-align: right;
 	}
-	a {
+	span {
 		color: inherit;
+		text-decoration: underline;
 	}
 
-	a:hover {
+	span:hover {
 		color: blue;
 		background-color: red;
+		cursor: pointer;
 	}
 </style>
