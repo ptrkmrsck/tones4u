@@ -116,6 +116,7 @@
 		background: inherit;
 		color: inherit;
 		font-family: inherit;
+		caret-color: white;
 		border: 1px solid white;
 		border-radius: 0;
 	}

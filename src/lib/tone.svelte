@@ -105,6 +105,7 @@
 		font-size: 1rem;
 		border: 1px solid white;
 		border-radius: 0;
+		caret-color: white;
 	}
 	input[type='number']:focus {
 		outline: none;
