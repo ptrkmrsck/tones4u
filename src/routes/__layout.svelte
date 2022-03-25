@@ -1,3 +1,6 @@
+<svelte:head>
+	<title>⌇tones4u.org⌇</title>
+</svelte:head>
 <slot />
 
 <style>

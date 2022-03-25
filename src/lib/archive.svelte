@@ -3,6 +3,13 @@
 	import { freqs } from '$lib/freqs';
 
 	let archiveClick = (e) => {
+		$freqs = {
+			freq1: '0',
+			freq2: '0',
+			freq3: '0',
+			freq4: '0'
+		};
+
 		let archiveURL = new URL(e.target.dataset.url);
 		for (const [k, v] of archiveURL.searchParams.entries()) {
 			$freqs[k] = v;
@@ -15,7 +22,9 @@
 		<p>⏦loading⏦</p>
 	{:then value}
 		{#each value.data.reverse() as i}
-			<p><span data-url={i.url} on:click={archiveClick}>{i.description}</span></p>
+			{#if i.approved}
+				<p><span data-url={i.url} on:click={archiveClick}>{i.description}</span></p>
+			{/if}
 		{/each}
 	{/await}
 </div>
