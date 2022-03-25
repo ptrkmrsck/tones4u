@@ -6,8 +6,7 @@
 	let value = '';
 	let submitted = false;
 	let archiveToggle = false;
-	let url = new URL(window.location.toString());
-	let searchParams = url.href.includes('freq');
+	let url, searchParams;
 
 	let placeholder = makePlaceholder();
 	const dispatch = createEventDispatcher();
@@ -26,13 +25,17 @@
 	let archiveClick = () => {
 		archiveToggle = !archiveToggle;
 	};
+	onMount(() => {
+		url = new URL(window.location.toString());
+		searchParams = url.href.includes('freq');
+	});
 </script>
 
 <div class="background" on:click={close} />
 <main>
 	<button class="close" on:click={close}>x</button>
 	{#if !archiveToggle}
-		<p>Ty for visiting ⏦tones4u⏦</p>
+		<p>Ty for visiting ⏦tones4u.org⏦</p>
 		<p>To turn on a tone click/toggle the <span class="circle">◯</span></p>
 		<p>Make sure your device is not in "silent mode"</p>
 		<p>Headphones are recommended</p>
