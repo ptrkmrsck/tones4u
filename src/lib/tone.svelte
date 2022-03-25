@@ -74,7 +74,7 @@
 		>frequency (hz)
 		<input
 			type="number"
-			min="20"
+			min="0"
 			max="10000"
 			name={toneId}
 			id={toneId}
