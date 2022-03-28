@@ -1,6 +1,11 @@
 <script>
-	import supabase from '$lib/supabase';
-	import { freqs } from '$lib/freqs';
+	import { freqs } from '$lib/freqs.js';
+
+	const get = async () => {
+		const response = await fetch('/api.json');
+		const data = await response.json();
+		return data;
+	};
 
 	let archiveClick = (e) => {
 		$freqs = {
@@ -18,13 +23,11 @@
 </script>
 
 <div>
-	{#await supabase.from('tones4uArchive').select('*')}
+	{#await get()}
 		<p>⏦loading⏦</p>
 	{:then value}
-		{#each value.data.reverse() as i}
-			{#if i.approved}
-				<p><span data-url={i.url} on:click={archiveClick}>{i.description}</span></p>
-			{/if}
+		{#each value.data as i}
+			<p><span data-url={i.url} on:click={archiveClick}>{i.description}</span></p>
 		{/each}
 	{/await}
 </div>
