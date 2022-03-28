@@ -1,8 +1,8 @@
 <script>
-	import supabase from '$lib/supabase';
-	import { createEventDispatcher, onMount } from 'svelte';
-	import { makePlaceholder } from '$lib/freqs.js';
+	import { onMount, createEventDispatcher } from 'svelte';
 	import Archive from '$lib/archive.svelte';
+	import { makePlaceholder } from '$lib/freqs.js';
+
 	let value = '';
 	let submitted = false;
 	let archiveToggle = false;
@@ -14,9 +14,27 @@
 
 	const handleSubmit = async (e) => {
 		submitted = true;
-		const { data, error } = await supabase
-			.from('tones4uArchive')
-			.insert([{ description: value, url: url.href }]);
+
+		// addToArchive(value, url.href);
+		// const { data, error } = await db
+		// 	.from('tones4uArchive')
+		// 	.insert([{ description: value, url: url.href }]);
+		console.log(value, url.href);
+
+		try {
+			fetch('/api.json', {
+				method: 'POST',
+				header: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					description: value,
+					url: url.href
+				})
+			});
+		} catch (e) {
+			console.error(e);
+		}
 		setTimeout(() => {
 			submitted = false;
 			value = '';
