@@ -2,7 +2,7 @@
 	import { allData } from '$lib/data.js';
 
 	const get = async () => {
-		const response = await fetch('$lib/api/archive.js');
+		const response = await fetch('/api.json');
 		const data = await response.json();
 		return data;
 	};
