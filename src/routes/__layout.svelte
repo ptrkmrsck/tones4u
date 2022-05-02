@@ -5,8 +5,9 @@
 
 <style>
 	:root {
+		--black: #151515ff;
 		box-sizing: border-box;
-		background: #151515ff;
+		background: var(--black);
 		color: white;
 		font-family: monospace;
 	}

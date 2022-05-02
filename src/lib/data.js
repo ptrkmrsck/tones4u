@@ -1,14 +1,39 @@
 import { writable } from 'svelte/store';
 
-export const freqs = writable({
-	freq1: null,
-	freq2: null,
-	freq3: null,
-	freq4: null
+const NUMFREQS = 4;
+let rndmMin = 39;
+let rndmMax = 99;
+
+let emptyArray = new Array(NUMFREQS).fill(0);
+
+export const rndmmtof = () => {
+	return (Math.pow(2, (Math.random() * (rndmMax - rndmMin) + rndmMin - 69) / 12) * 440).toFixed(2);
+};
+
+let appState = emptyArray.map(() => {
+	return {
+		freq: rndmmtof(),
+		osc: 'sine',
+		status: false,
+		volume: -6,
+		rampTime: 2,
+		locked: false
+	};
 });
 
-//oscTypes = sine, sawtooth, square
-export const oscType = writable('sine');
+export const allData = writable(appState);
+
+const rdmToneWord = () => {
+	return toneWords[Math.floor(Math.random() * toneWords.length)];
+};
+export const makePlaceholder = () => {
+	return `${rdmToneWord()}, ${rdmToneWord()}, and ${rdmToneWord()}`;
+};
+
+export const validateURL = (url) => {
+	const regex = /\d[=]/gm;
+	return regex.exec(url.href);
+};
 
 const toneWords = [
 	'thick',
@@ -109,10 +134,3 @@ const toneWords = [
 	'yellow',
 	'silver'
 ];
-
-const rdmToneWord = () => {
-	return toneWords[Math.floor(Math.random() * toneWords.length)];
-};
-export const makePlaceholder = () => {
-	return `${rdmToneWord()}, ${rdmToneWord()}, and ${rdmToneWord()}`;
-};
