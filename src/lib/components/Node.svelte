@@ -1,25 +1,29 @@
 <script>
-	import { onMount } from 'svelte';
-	import { freqs, oscType } from '$lib/freqs';
-
 	import * as Tone from 'tone';
+	import { onMount } from 'svelte';
 	import { replaceStateWithQuery } from '$lib/url';
 
-	let onOff = false;
-	let osc;
-	let freq;
+	export let toneData;
 	export let toneId;
 	export let pan = 0;
+	let lockStatus = false;
 
-	$: if ($freqs[toneId]) freqChange($freqs[toneId]);
+	let osc, panner;
+
+	$: if (osc) handleChange(toneData.freq);
+	$: if (osc) toggle(toneData.status);
+	$: if (osc) osc.type = toneData.osc;
 
 	onMount(() => {
-		let panner = new Tone.Panner({
+		panner = new Tone.Panner({
 			pan
 		}).toDestination();
+
+		// filter = new Tone.Filter(1500, 'lowpass', -24).connect(panner);
+
 		osc = new Tone.Oscillator({
-			frequency: $freqs[toneId],
-			type: $oscType,
+			frequency: toneData.freq,
+			type: toneData.osc,
 			volume: -Infinity
 		}).connect(panner);
 	});
@@ -27,60 +31,70 @@
 	let startTone = () => {
 		//turn on tone
 		osc.start();
-		osc.volume.rampTo(-6, 0.5);
+		osc.volume.rampTo(toneData.volume, 1);
 
 		//add to query string
-		replaceStateWithQuery({ [toneId]: $freqs[toneId] });
+		replaceStateWithQuery({ [toneId]: toneData.freq });
 	};
 
 	let stopTone = () => {
 		//turn off tone and remove from query string
 		replaceStateWithQuery({ [toneId]: null });
-		osc.volume.rampTo(-Infinity, 0.5);
+		osc.volume.rampTo(-Infinity, 1);
 		osc.stop('+1.6');
 	};
 
-	let toggle = () => {
-		if (onOff) {
+	let toggle = (status) => {
+		if (status) {
 			startTone();
 			return;
 		}
 		stopTone();
 	};
 
-	let freqChange = (newFreq) => {
-		freq = newFreq;
-		osc.frequency.rampTo(newFreq, 2);
-		if (onOff) replaceStateWithQuery({ [toneId]: newFreq });
+	const handleChange = (f) => {
+		osc.frequency.rampTo(f, toneData.rampTime);
+		// if (onOff) replaceStateWithQuery({ [toneId]: f });
 	};
 
-	let handleChange = (event) => {
-		freqChange(event.target.value);
+	const lockToggle = (e) => {
+		if (!e.target.matches('input')) {
+			lockStatus = !lockStatus;
+			toneData.locked = lockStatus;
+		}
+	};
+
+	let debounce = (cb) => {
+		let timeout;
+		return (...args) => {
+			clearTimeout(timeout);
+			timeout = setTimeout(() => {
+				cb(...args);
+			}, 500);
+		};
 	};
 </script>
 
-<main>
+<main class:lockStatus on:click={lockToggle}>
 	<input
 		title="click for tone"
 		type="checkbox"
 		name="startstop"
 		id="startstop"
-		bind:checked={onOff}
-		on:change={toggle}
+		bind:checked={toneData.status}
 	/>
 	<label for="start-stop" />
 
 	<label name="click for tone" class={'freq'} for={toneId}
-		>frequency (hz)
+		>frequency (hz):
 		<input
 			type="number"
 			min="0"
 			max="10000"
 			name={toneId}
 			id={toneId}
-			step="0.1"
-			bind:value={freq}
-			on:change={handleChange}
+			step="0.01"
+			bind:value={toneData.freq}
 		/>
 	</label>
 </main>
@@ -96,23 +110,39 @@
 		min-width: 100px;
 		padding: 0.9rem;
 		font-size: 1rem;
+		cursor: pointer;
 	}
 	input[type='number'] {
-		width: 5rem;
+		width: 5.2rem;
 		background: inherit;
 		color: inherit;
 		font-family: inherit;
-		font-size: 1rem;
+
 		border: 1px solid white;
 		border-radius: 0;
 		caret-color: white;
 	}
+
+	input[type='number'],
+	.freq {
+		font-size: 16px;
+	}
+
 	input[type='number']:focus {
 		outline: none;
-		box-shadow: 3px 3px #0000ff;
+		box-shadow: 3px 3px blue;
 	}
+
+	.lockStatus input[type='number']:focus {
+		box-shadow: 3px 3px red;
+	}
+
 	.freq {
 		color: white;
+		cursor: pointer;
+	}
+	.lockStatus {
+		background: blue;
 	}
 	::selection {
 		background: white;
@@ -135,17 +165,11 @@
 		border: 2px solid white;
 		background: inherit;
 		cursor: pointer;
+		z-index: 2;
 		appearance: none;
 		-webkit-appearance: none;
 	}
 	input[type='checkbox']:checked {
 		background: white;
-	}
-
-	@media (max-width: 1075px) {
-		input[type='number'],
-		.freq {
-			font-size: 16px;
-		}
 	}
 </style>

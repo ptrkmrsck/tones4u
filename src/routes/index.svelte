@@ -1,49 +1,64 @@
 <script>
-	import Tone from '$lib/tone.svelte';
-	import Menu from '$lib/menu.svelte';
+	import Node from '$lib/components/Node.svelte';
+	import Menu from '$lib/components/Menu.svelte';
 	import { onMount } from 'svelte';
-	import { freqs } from '$lib/freqs.js';
+	import { allData, rndmmtof, validateURL } from '$lib/data.js';
 
 	let copied = 'click to share';
 	let menuToggle = false;
 
 	onMount(() => {
-		let url = new URL(window.location.toString());
-		let searchParams = url.href.includes('freq');
+		let { validURL, url } = getUrl();
+		// console.log(validURL);
 		// if there is a query string set all freqs to null and reset with query vals
-		if (searchParams) {
+		if (validURL) {
+			$allData.forEach((x, i) => {
+				$allData[i].freq = null;
+			});
 			for (const [k, v] of url.searchParams.entries()) {
-				$freqs[k] = v;
+				$allData[k - 1].freq = v;
 			}
 			return;
 		}
-		// if no query string set random tones
-		rndmFreqs();
 	});
 
-	let copyClick = () => {
+	let rndmFreqs = () => {
+		$allData.forEach((x, i) => {
+			if (!$allData[i].locked) {
+				$allData[i].freq = rndmmtof();
+			}
+		});
+	};
+
+	const getUrl = () => {
 		let url = new URL(window.location.toString());
-		let searchParams = url.href.includes('freq');
-		if (searchParams) {
-			const copyurl = new URL(window.location.toString());
-			navigator.clipboard.writeText(copyurl);
+		//validate query string
+		let validURL = validateURL(url);
+		return {
+			validURL,
+			url
+		};
+	};
+
+	let copyClick = () => {
+		let { validURL, url } = getUrl();
+		if (validURL) {
+			navigator.clipboard.writeText(url);
 			copied = 'sharing link copied!';
 			setTimeout(() => {
 				copied = 'click to share';
 			}, 1500);
-		} else if (!searchParams) {
+		} else if (!validURL) {
 			copied = 'ERROR: No tones active. Turn on at least one tone to share';
 			setTimeout(() => {
 				copied = 'click to share';
 			}, 3200);
 		}
 	};
-	// let clearFreqs = () => {
-	// 	Object.keys($freqs).forEach((k) => ($freqs[k] = null));
-	// };
-
-	let rndmFreqs = () => {
-		Object.keys($freqs).forEach((k) => ($freqs[k] = (Math.random() * 1000 + 60).toFixed(2)));
+	const handleToggle = (e) => {
+		$allData.forEach((x, i) => {
+			$allData[i].status = e.target.checked;
+		});
 	};
 </script>
 
@@ -56,29 +71,41 @@
 		<button class="menu" on:click={() => (menuToggle = !menuToggle)}>???</button>
 	{/if}
 	<button class="rndm" on:click={rndmFreqs}>rndm</button>
-	<Tone toneId="freq3" pan="-1" />
-	<Tone toneId="freq1" pan="-1" />
-	<Tone toneId="freq2" pan="1" />
-	<Tone toneId="freq4" pan="1" />
+
+	{#each $allData as toneData, i}
+		<Node toneId={i + 1} pan={i < $allData.length / 2 ? -1 : 1} bind:toneData />
+	{/each}
+
+	<input
+		title="turn all on/off"
+		type="checkbox"
+		name="startstop"
+		id="startstop"
+		on:change={handleToggle}
+	/>
+	<label for="start-stop" />
+
 	<button
 		title="click to copy tones4u sharing link to your clipboard"
 		class="copy"
-		on:click={copyClick}>{copied}</button
-	>
+		on:click={copyClick}
+		>{copied}
+	</button>
 </main>
 
 <style>
 	main {
-		height: 98vh;
+		height: 97vh;
+		overflow-y: hidden;
 		min-height: 450px;
-		display: flex;
-		justify-content: space-evenly;
-		align-items: center;
-		flex-direction: row;
-		flex-wrap: nowrap;
 		align-content: center;
-		gap: 0.5rem;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 2rem;
 	}
+
 	main:after {
 		content: '';
 		position: absolute;
@@ -93,36 +120,48 @@
 	button {
 		background-color: blue;
 		font-family: inherit;
+		font-size: 1.2rem;
 		color: inherit;
 		margin: 0;
 		border: none;
 		cursor: pointer;
 		position: absolute;
-		padding: 0.6rem 0.8rem;
-	}
-	.copy {
-		bottom: 0;
+		padding: 0.8rem 1.2rem;
 	}
 	.rndm {
+		bottom: 0;
+		z-index: 1;
+	}
+	.copy {
+		max-width: 50%;
 		right: 0;
 		top: 0;
-		z-index: 1;
 	}
 	.menu {
 		position: absolute;
 		left: 0;
 		top: 0;
-		z-index: 2;
+		z-index: 3;
 		max-width: 50%;
 	}
 
-	@media (max-width: 1075px) {
-		main {
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-			gap: 2rem;
-		}
+	input[type='checkbox'] {
+		width: 5rem;
+		height: 5rem;
+		border-radius: 50%;
+		transition: all 1s;
+		border: 2px solid red;
+		background: var(--black);
+		cursor: pointer;
+		appearance: none;
+		-webkit-appearance: none;
+		transform: translateX(-1px);
+	}
+	input[type='checkbox']:checked {
+		background: blue;
+	}
+
+	@media (max-width: 600px) {
 		.menu {
 			max-width: 100%;
 		}

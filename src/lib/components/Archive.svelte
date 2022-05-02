@@ -1,23 +1,20 @@
 <script>
-	import { freqs } from '$lib/freqs.js';
+	import { allData } from '$lib/data.js';
 
 	const get = async () => {
-		const response = await fetch('/api.json');
+		const response = await fetch('$lib/api/archive.js');
 		const data = await response.json();
 		return data;
 	};
 
 	let archiveClick = (e) => {
-		$freqs = {
-			freq1: '0',
-			freq2: '0',
-			freq3: '0',
-			freq4: '0'
-		};
+		$allData.forEach((x, i) => {
+			$allData[i].freq = 0;
+		});
 
 		let archiveURL = new URL(e.target.dataset.url);
 		for (const [k, v] of archiveURL.searchParams.entries()) {
-			$freqs[k] = v;
+			$allData[k].freq = v;
 		}
 	};
 </script>
