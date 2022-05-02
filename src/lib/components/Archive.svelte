@@ -14,7 +14,7 @@
 
 		let archiveURL = new URL(e.target.dataset.url);
 		for (const [k, v] of archiveURL.searchParams.entries()) {
-			$allData[k].freq = v;
+			$allData[k - 1].freq = v;
 		}
 	};
 </script>
