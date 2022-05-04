@@ -20,14 +20,8 @@
 	const handleSubmit = async (e) => {
 		submitted = true;
 
-		addToArchive(value, url.href);
-		const { data, error } = await db
-			.from('tones4uArchive')
-			.insert([{ description: value, url: url.href }]);
-		console.log(value, url.href);
-
 		try {
-			fetch('/api/archive', {
+			fetch('/api.json', {
 				method: 'POST',
 				header: {
 					'Content-Type': 'application/json'
