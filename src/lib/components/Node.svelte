@@ -6,11 +6,14 @@
 	export let toneData;
 	export let toneId;
 	export let pan = 0;
+	let value = toneData.freq;
 	let lockStatus = false;
 
 	let osc, panner;
 
-	$: if (osc) handleChange(toneData.freq);
+	$: if (osc) {
+		freqRamp(toneData.freq);
+	}
 	$: if (osc) toggle(toneData.status);
 	$: if (osc) osc.type = toneData.osc;
 
@@ -52,9 +55,15 @@
 		stopTone();
 	};
 
-	const handleChange = (f) => {
+	const freqRamp = (f) => {
 		osc.frequency.rampTo(f, toneData.rampTime);
-		// if (onOff) replaceStateWithQuery({ [toneId]: f });
+		value = f;
+	};
+
+	const handleChange = (e) => {
+		if (e.target.value > 0 && e.target.value < 10001) {
+			toneData.freq = e.target.value;
+		}
 	};
 
 	const lockToggle = (e) => {
@@ -62,16 +71,6 @@
 			lockStatus = !lockStatus;
 			toneData.locked = lockStatus;
 		}
-	};
-
-	let debounce = (cb) => {
-		let timeout;
-		return (...args) => {
-			clearTimeout(timeout);
-			timeout = setTimeout(() => {
-				cb(...args);
-			}, 500);
-		};
 	};
 </script>
 
@@ -94,7 +93,8 @@
 			name={toneId}
 			id={toneId}
 			step="0.01"
-			bind:value={toneData.freq}
+			{value}
+			on:change={handleChange}
 		/>
 	</label>
 </main>
