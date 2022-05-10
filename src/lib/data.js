@@ -15,7 +15,7 @@ let appState = emptyArray.map(() => {
 		freq: rndmmtof(),
 		osc: 'sine',
 		status: false,
-		volume: -6,
+		volume: -10,
 		rampTime: 2,
 		locked: false
 	};
