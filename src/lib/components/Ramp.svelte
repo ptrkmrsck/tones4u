@@ -10,6 +10,8 @@
 	};
 </script>
 
+//TODO fix slider formatting for firefox
+
 <main>
 	<input
 		type="range"

@@ -6,14 +6,14 @@
 	export let toneData;
 	export let toneId;
 	export let pan = 0;
+
+	//todo: add onDestroy
 	let value = toneData.freq;
 	let lockStatus = false;
 
 	let osc, panner;
 
-	$: if (osc) {
-		freqRamp(toneData.freq);
-	}
+	$: if (osc) freqRamp(toneData.freq);
 	$: if (osc) toggle(toneData.status);
 	$: if (osc) osc.type = toneData.osc;
 
@@ -21,8 +21,6 @@
 		panner = new Tone.Panner({
 			pan
 		}).toDestination();
-
-		// filter = new Tone.Filter(1500, 'lowpass', -24).connect(panner);
 
 		osc = new Tone.Oscillator({
 			frequency: toneData.freq,
@@ -35,7 +33,6 @@
 		//turn on tone
 		osc.start();
 		osc.volume.rampTo(toneData.volume, 1);
-
 		//add to query string
 		replaceStateWithQuery({ [toneId]: toneData.freq });
 	};
